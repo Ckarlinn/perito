@@ -16,6 +16,7 @@ npm install
 ```bash
 cp backend/.env.example backend/.env
 # Edit backend/.env and set OPENAI_API_KEY
+# The server will exit on startup if this variable is not defined
 ```
 
 3. Start the API server:
