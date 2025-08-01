@@ -11,7 +11,7 @@ cd backend
 npm install
 ```
 
-2. Create a `.env` file inside `backend/` with your OpenAI API key. Use `.env.example` as a template:
+2. Copy `backend/.env.example` to `backend/.env` and add your OpenAI API key:
 
 ```bash
 cp backend/.env.example backend/.env
