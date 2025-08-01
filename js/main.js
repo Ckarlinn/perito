@@ -236,6 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const fecha    = new Date().toLocaleString();
     const { jsPDF } = window.jspdf;
     const pdf       = new jsPDF();
+    const lineHeight = 10;
+    const pageLimit  = 280;
     let y = 10;
     pdf.text('PeritIA - Simulación Judicial', 10, y); y += 10;
     pdf.text(`Archivo: ${filename}.txt`, 10, y); y += 10;
@@ -245,10 +247,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     historial.forEach((item, idx) => {
       const evaluacion = item.evaluacion.replace(/\n/g, ' ');
-      pdf.text(`Pregunta ${idx + 1}: ${item.pregunta}`, 10, y); y += 10;
-      pdf.text(`Respuesta: ${item.respuesta}`, 10, y); y += 10;
-      pdf.text(`Evaluación: ${evaluacion}`, 10, y); y += 20;
-      if (y > 280) { pdf.addPage(); y = 10; }
+      let lines = pdf.splitTextToSize(`Pregunta ${idx + 1}: ${item.pregunta}`, 180);
+      pdf.text(lines, 10, y);
+      y += lines.length * lineHeight;
+      if (y > pageLimit) { pdf.addPage(); y = 10; }
+
+      lines = pdf.splitTextToSize(`Respuesta: ${item.respuesta}`, 180);
+      pdf.text(lines, 10, y);
+      y += lines.length * lineHeight;
+      if (y > pageLimit) { pdf.addPage(); y = 10; }
+
+      lines = pdf.splitTextToSize(`Evaluación: ${evaluacion}`, 180);
+      pdf.text(lines, 10, y);
+      y += lines.length * lineHeight;
+      y += lineHeight;
+      if (y > pageLimit) { pdf.addPage(); y = 10; }
     });
 
     pdf.save(`simulacion_${filename}.pdf`);
@@ -262,12 +275,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const fecha = new Date().toLocaleString();
     const { jsPDF } = window.jspdf;
     const pdf       = new jsPDF();
+    const lineHeight = 10;
+    const pageLimit  = 280;
     let y = 10;
     pdf.text('Preguntas Generadas', 10, y); y += 10;
     pdf.text(`Fecha: ${fecha}`, 10, y); y += 20;
     preguntasActuales.forEach((q, idx) => {
-      pdf.text(`${idx + 1}. ${q}`, 10, y); y += 10;
-      if (y > 280) { pdf.addPage(); y = 10; }
+      const lines = pdf.splitTextToSize(`${idx + 1}. ${q}`, 180);
+      pdf.text(lines, 10, y);
+      y += lines.length * lineHeight;
+      if (y > pageLimit) { pdf.addPage(); y = 10; }
     });
     pdf.save(`preguntas_generadas_${fecha.split(',')[0].replace(/\//g,'-')}.pdf`);
   });
