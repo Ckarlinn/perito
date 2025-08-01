@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { generarRespuestaGPT } from './openai.js';
-import { generarPromptDesdeModo } from './prompts.js';
+import { generarPromptPreguntas } from './prompts.js';
 
 dotenv.config();
 
@@ -37,13 +37,7 @@ app.post('/api/preguntas', async (req, res) => {
   try {
     const { modo, estructura, tono } = req.body;
 
-    const prompt = generarPromptDesdeModo(
-      modo,
-      estructura.hechos,
-      estructura.metodologia,
-      estructura.conclusiones,
-      tono // ← Se pasa aquí
-    );
+    const prompt = generarPromptPreguntas(modo, estructura, tono);
 
     const respuesta = await generarRespuestaGPT(prompt);
     const preguntas = respuesta.split('\n').filter(p => p.trim() !== '');
