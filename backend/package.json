@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "openai.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "start": "node server.js"
   },
   "keywords": [],
@@ -16,5 +16,9 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "openai": "^5.10.2"
+  },
+  "devDependencies": {
+    "jest": "^30.0.5",
+    "supertest": "^7.1.4"
   }
 }
