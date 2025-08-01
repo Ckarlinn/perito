@@ -7,6 +7,11 @@ export async function analizarDictamen(texto) {
 
   const data = await res.json();
 
+  if (!res.ok || !data.estructura) {
+    const msg = data.error || 'Error al analizar dictamen';
+    throw new Error(msg);
+  }
+
   const partes = data.estructura;
 
   const resultado = {
@@ -21,6 +26,9 @@ export async function analizarDictamen(texto) {
 }
 
 function extraer(titulo, texto) {
+  if (!texto) {
+    return 'No encontrado';
+  }
   const regex = new RegExp(`${titulo}:?\\s*([\\s\\S]*?)(\\n\\n|$)`, 'i');
   const match = texto.match(regex);
   return match ? match[1].trim() : 'No encontrado';
