@@ -11,12 +11,12 @@ cd backend
 npm install
 ```
 
-2. Copy `backend/.env.example` to `backend/.env` and add your OpenAI API key:
+2. Copy `backend/.env.example` to `backend/.env` and edit it:
 
 ```bash
 cp backend/.env.example backend/.env
-# Edit backend/.env and set OPENAI_API_KEY
-# The server will exit on startup if this variable is not defined
+# Open backend/.env and set OPENAI_API_KEY
+# Optionally set PORT if you don't want the default 4000
 ```
 
 3. Start the API server:
