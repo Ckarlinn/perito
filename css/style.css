@@ -182,7 +182,7 @@ body.dark .message.abogado {
 
 .recomendacion {
     background-color: #40c240;
-    display: in;
+    display: inline-block;
     width: fit-content;
     padding-right: 0.5rem;
     padding-left: 0.5rem;
