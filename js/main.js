@@ -1,12 +1,7 @@
 import { analizarDictamen } from './parser.js';
+import * as pdfjsLib from '../assets/js/pdf.min.js';
 
 // === Soporte de TXT y PDF (OCR incluido) ===
-
-// Compatibilidad universal para PDF.js por CDN
-const pdfjsLib = window.pdfjsLib || window['pdfjs-dist/build/pdf'];
-if (!pdfjsLib) {
-  alert("PDF.js no está cargado correctamente. Verifica tu <script> en el HTML.");
-}
 
 function esTextoEscaso(txt) {
   // Menos de 50 palabras = probablemente es imagen
