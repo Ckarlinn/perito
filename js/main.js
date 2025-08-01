@@ -157,7 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === CAMBIO AQUÍ: lee txt o pdf con o sin OCR ===
     const texto = await obtenerTextoArchivo(dictamenInput.files[0]);
-    estructuraDictamen = await analizarDictamen(texto);
+    try {
+      estructuraDictamen = await analizarDictamen(texto);
+    } catch (err) {
+      cargandoEl.classList.add('hidden');
+      alert(err.message || 'Error al analizar dictamen');
+      return;
+    }
 
     const resp = await fetch('http://localhost:4000/api/preguntas', {
       method:  'POST',
