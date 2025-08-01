@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>`;
       btnHistorial.classList.remove('hidden');
       btnPreguntas.classList.remove('hidden');
+      chatContainer.scrollTop = chatContainer.scrollHeight;
       return;
     }
     chatContainer.innerHTML += `
@@ -130,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>`;
     respuestaPeritoEl.value = '';
     respuestaPeritoEl.focus();
+    chatContainer.scrollTop = chatContainer.scrollHeight;
   }
 
   /** Incrementa el índice y recalcula */
@@ -219,6 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>`;
 
     historial.push({ pregunta: preguntaActual, respuesta, evaluacion: resultado });
+    chatContainer.scrollTop = chatContainer.scrollHeight;
     avanzarPregunta();
   });
 
@@ -228,37 +231,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const modo     = modoSimulacionSelect.value;
     const tono     = modoAcademico ? 'Académico' : 'Litigio';
     const fecha    = new Date().toLocaleString();
-
-    const wrapper = document.createElement('div');
-    Object.assign(wrapper.style, {
-      background: 'white',
-      color:      'black',
-      padding:    '20px',
-      fontFamily: 'Arial, sans-serif',
-      lineHeight: '1.6',
-      width:      '800px'
-    });
-    wrapper.innerHTML = `
-      <h2>PeritIA - Simulación Judicial</h2>
-      <p><strong>Archivo:</strong> ${filename}.txt</p>
-      <p><strong>Modo:</strong> ${modo}</p>
-      <p><strong>Tono:</strong> ${tono}</p>
-      <p><strong>Fecha:</strong> ${fecha}</p>
-      <hr>
-    `;
-    const clone = chatContainer.cloneNode(true);
-    clone.querySelectorAll('textarea, button, #cargando').forEach(el => el.remove());
-    wrapper.appendChild(clone);
-    document.body.appendChild(wrapper);
-
-    await new Promise(r => setTimeout(r, 100));
-    const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true });
-    const img    = canvas.toDataURL('image/png');
     const { jsPDF } = window.jspdf;
-    const pdf       = new jsPDF({ unit: 'px', format: [canvas.width, canvas.height] });
-    pdf.addImage(img, 'PNG', 0, 0, canvas.width, canvas.height);
+    const pdf       = new jsPDF();
+    let y = 10;
+    pdf.text('PeritIA - Simulación Judicial', 10, y); y += 10;
+    pdf.text(`Archivo: ${filename}.txt`, 10, y); y += 10;
+    pdf.text(`Modo: ${modo}`, 10, y); y += 10;
+    pdf.text(`Tono: ${tono}`, 10, y); y += 10;
+    pdf.text(`Fecha: ${fecha}`, 10, y); y += 20;
+
+    historial.forEach((item, idx) => {
+      const evaluacion = item.evaluacion.replace(/\n/g, ' ');
+      pdf.text(`Pregunta ${idx + 1}: ${item.pregunta}`, 10, y); y += 10;
+      pdf.text(`Respuesta: ${item.respuesta}`, 10, y); y += 10;
+      pdf.text(`Evaluación: ${evaluacion}`, 10, y); y += 20;
+      if (y > 280) { pdf.addPage(); y = 10; }
+    });
+
     pdf.save(`simulacion_${filename}.pdf`);
-    document.body.removeChild(wrapper);
   });
 
   // — Exportar sólo preguntas a PDF —
@@ -267,36 +257,15 @@ document.addEventListener('DOMContentLoaded', () => {
       return alert('No hay preguntas para exportar.');
     }
     const fecha = new Date().toLocaleString();
-    const wrapper = document.createElement('div');
-    Object.assign(wrapper.style, {
-      background: 'white',
-      color:      'black',
-      padding:    '20px',
-      fontFamily: 'Arial, sans-serif',
-      lineHeight: '1.6',
-      width:      '600px'
-    });
-    wrapper.innerHTML = `<h2>Preguntas Generadas</h2>
-      <p><strong>Fecha:</strong> ${fecha}</p><hr>`;
-    const ol = document.createElement('ol');
-    preguntasActuales.forEach(q => {
-      const li = document.createElement('li');
-      li.textContent = q;
-      li.style.marginBottom = '0.5rem';
-      ol.appendChild(li);
-    });
-    wrapper.appendChild(ol);
-    wrapper.style.position = 'absolute';
-    wrapper.style.left     = '-9999px';
-    document.body.appendChild(wrapper);
-
-    await new Promise(r => setTimeout(r, 100));
-    const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true });
-    const img    = canvas.toDataURL('image/png');
     const { jsPDF } = window.jspdf;
-    const pdf       = new jsPDF({ unit: 'px', format: [canvas.width, canvas.height] });
-    pdf.addImage(img, 'PNG', 0, 0, canvas.width, canvas.height);
+    const pdf       = new jsPDF();
+    let y = 10;
+    pdf.text('Preguntas Generadas', 10, y); y += 10;
+    pdf.text(`Fecha: ${fecha}`, 10, y); y += 20;
+    preguntasActuales.forEach((q, idx) => {
+      pdf.text(`${idx + 1}. ${q}`, 10, y); y += 10;
+      if (y > 280) { pdf.addPage(); y = 10; }
+    });
     pdf.save(`preguntas_generadas_${fecha.split(',')[0].replace(/\//g,'-')}.pdf`);
-    document.body.removeChild(wrapper);
   });
 });
