@@ -70,3 +70,13 @@ Devuelve solo la lista con formato:
 
   return base;
 }
+
+export function generarPromptPreguntas(modo, estructura, tono = 'academico') {
+  return generarPromptDesdeModo(
+    modo,
+    estructura.hechos,
+    estructura.metodologia,
+    estructura.conclusiones,
+    tono
+  );
+}
