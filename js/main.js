@@ -1,5 +1,6 @@
 import { analizarDictamen } from './parser.js';
 import * as pdfjsLib from '../assets/js/pdf.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = '../assets/js/pdf.worker.min.js';
 
 // === Soporte de TXT y PDF (OCR incluido) ===
 
