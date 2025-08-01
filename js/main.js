@@ -120,7 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>`;
       btnHistorial.classList.remove('hidden');
       btnPreguntas.classList.remove('hidden');
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+      const wrapper = chatContainer.parentElement;
+      wrapper.scrollTop = wrapper.scrollHeight;
       return;
     }
     chatContainer.innerHTML += `
@@ -131,7 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>`;
     respuestaPeritoEl.value = '';
     respuestaPeritoEl.focus();
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    const wrapper = chatContainer.parentElement;
+    wrapper.scrollTop = wrapper.scrollHeight;
   }
 
   /** Incrementa el índice y recalcula */
@@ -221,7 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>`;
 
     historial.push({ pregunta: preguntaActual, respuesta, evaluacion: resultado });
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    const wrapper = chatContainer.parentElement;
+    wrapper.scrollTop = wrapper.scrollHeight;
     avanzarPregunta();
   });
 
