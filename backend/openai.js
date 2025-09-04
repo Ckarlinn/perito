@@ -12,12 +12,11 @@ if (process.env.OPENAI_API_KEY) {
 } else if (process.env.NODE_ENV !== 'test') {
   console.error('Error: OPENAI_API_KEY is not set in the environment.');
   console.error('Please create a .env file with your API key.');
-  process.exit(1);
 }
 
 export async function generarRespuestaGPT(prompt) {
   if (!openai) {
-    throw new Error('OpenAI client not initialized');
+    throw new Error('OpenAI client not initialized. Set OPENAI_API_KEY.');
   }
   const chatCompletion = await openai.chat.completions.create({
     model: 'gpt-4o',

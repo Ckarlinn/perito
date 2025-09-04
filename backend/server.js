@@ -72,6 +72,9 @@ Texto del dictamen:
     const respuesta = await generarRespuestaGPT(prompt);
     res.json({ estructura: respuesta });
   } catch (err) {
+    if (err.message.includes('OpenAI client not initialized')) {
+      return res.status(503).json({ error: 'Servicio no disponible' });
+    }
     res.status(500).json({ error: err.message });
   }
 });
@@ -87,6 +90,9 @@ app.post('/api/preguntas', async (req, res) => {
 
     res.json({ preguntas });
   } catch (err) {
+    if (err.message.includes('OpenAI client not initialized')) {
+      return res.status(503).json({ error: 'Servicio no disponible' });
+    }
     res.status(500).json({ error: err.message });
   }
 });
@@ -115,6 +121,9 @@ Devuelve una tabla y una recomendación final.
     const resultado = await generarRespuestaGPT(prompt);
     res.json({ resultado });
   } catch (err) {
+    if (err.message.includes('OpenAI client not initialized')) {
+      return res.status(503).json({ error: 'Servicio no disponible' });
+    }
     res.status(500).json({ error: err.message });
   }
 });
