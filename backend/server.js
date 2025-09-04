@@ -3,12 +3,55 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { generarRespuestaGPT } from './openai.js';
 import { generarPromptPreguntas } from './prompts.js';
+import { agregarDictamen, listarDictamenes, obtenerDictamen } from './historial.js';
 
 dotenv.config();
 
 export const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.post('/api/dictamenes', async (req, res) => {
+  try {
+    const { texto, estructura, fecha } = req.body;
+    if (
+      typeof texto !== 'string' ||
+      typeof fecha !== 'string' ||
+      typeof estructura !== 'object'
+    ) {
+      return res.status(400).json({ error: 'Datos inválidos' });
+    }
+    const dictamen = await agregarDictamen({ texto, estructura, fecha });
+    res.status(201).json(dictamen);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/dictamenes', (req, res) => {
+  try {
+    const dictamenes = listarDictamenes();
+    res.json(dictamenes);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/dictamenes/:id', (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'ID inválido' });
+    }
+    const dictamen = obtenerDictamen(id);
+    if (!dictamen) {
+      return res.status(404).json({ error: 'Dictamen no encontrado' });
+    }
+    res.json(dictamen);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.post('/api/analizar', async (req, res) => {
   try {
