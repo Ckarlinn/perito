@@ -5,9 +5,14 @@ export async function analizarDictamen(texto) {
     body: JSON.stringify({ texto })
   });
 
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(msg || 'Error al analizar dictamen');
+  }
+
   const data = await res.json();
 
-  if (!res.ok || !data.estructura) {
+  if (!data.estructura) {
     const msg = data.error || 'Error al analizar dictamen';
     throw new Error(msg);
   }
