@@ -217,24 +217,31 @@ document.addEventListener('DOMContentLoaded', () => {
       })
     });
     cargarDictamenesRecientes();
-
-    const resp = await fetch(`${API_BASE_URL}/api/preguntas`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        modo:       modoSimulacionSelect.value,
-        estructura: estructuraDictamen,
-        tono:       modoAcademico ? 'academico' : 'litigio'
-      })
-    });
-    if (!resp.ok) {
-      const msg = await resp.text();
+    try {
+      const resp = await fetch(`${API_BASE_URL}/api/preguntas`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          modo:       modoSimulacionSelect.value,
+          estructura: estructuraDictamen,
+          tono:       modoAcademico ? 'academico' : 'litigio'
+        })
+      });
+      if (!resp.ok) {
+        throw new Error(await resp.text());
+      }
+      const { preguntas } = await resp.json();
+      if (!preguntas.length) {
+        cargandoEl.classList.add('hidden');
+        alert('No se pudieron generar preguntas');
+        return;
+      }
+      preguntasActuales = preguntas;
+    } catch (err) {
       cargandoEl.classList.add('hidden');
-      alert(msg || 'Error al generar preguntas');
+      alert('No se pudieron generar preguntas');
       return;
     }
-    const { preguntas } = await resp.json();
-    preguntasActuales    = preguntas;
 
     cargandoEl.classList.add('hidden');
     mostrarPregunta();
