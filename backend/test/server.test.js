@@ -80,6 +80,17 @@ describe('API routes', () => {
     expect(res.status).toBe(500);
   });
 
+  test('/api/analizar returns 503 when OpenAI is unavailable', async () => {
+    mockGenerarRespuestaGPT.mockRejectedValue(
+      new Error('OpenAI client not initialized')
+    );
+    const res = await request(app)
+      .post('/api/analizar')
+      .send({ texto: 'dictamen' });
+
+    expect(res.status).toBe(503);
+  });
+
   test('/api/preguntas handles OpenAI errors', async () => {
     mockGenerarRespuestaGPT.mockRejectedValue(new Error('fallo'));
     const estructura = { hechos: '', metodologia: '', conclusiones: '' };
@@ -90,6 +101,18 @@ describe('API routes', () => {
     expect(res.status).toBe(500);
   });
 
+  test('/api/preguntas returns 503 when OpenAI is unavailable', async () => {
+    mockGenerarRespuestaGPT.mockRejectedValue(
+      new Error('OpenAI client not initialized')
+    );
+    const estructura = { hechos: '', metodologia: '', conclusiones: '' };
+    const res = await request(app)
+      .post('/api/preguntas')
+      .send({ modo: 'actor', estructura, tono: 'academico' });
+
+    expect(res.status).toBe(503);
+  });
+
   test('/api/evaluar handles OpenAI errors', async () => {
     mockGenerarRespuestaGPT.mockRejectedValue(new Error('fallo'));
     const res = await request(app)
@@ -97,6 +120,17 @@ describe('API routes', () => {
       .send({ respuesta: 'ok' });
 
     expect(res.status).toBe(500);
+  });
+
+  test('/api/evaluar returns 503 when OpenAI is unavailable', async () => {
+    mockGenerarRespuestaGPT.mockRejectedValue(
+      new Error('OpenAI client not initialized')
+    );
+    const res = await request(app)
+      .post('/api/evaluar')
+      .send({ respuesta: 'ok' });
+
+    expect(res.status).toBe(503);
   });
 });
 
