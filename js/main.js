@@ -78,6 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!dictamenesRecientesNav) return;
     try {
       const resp = await fetch('http://localhost:4000/api/dictamenes');
+      if (!resp.ok) {
+        const msg = await resp.text();
+        throw new Error(msg || 'Error al cargar dictámenes');
+      }
       const dictamenes = await resp.json();
       dictamenesRecientesNav.innerHTML = '';
       dictamenes.slice().reverse().forEach(d => {
@@ -87,9 +91,17 @@ document.addEventListener('DOMContentLoaded', () => {
         a.className = 'px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-white/5 transition-colors duration-200 truncate';
         a.addEventListener('click', async (e) => {
           e.preventDefault();
-          const res = await fetch(`http://localhost:4000/api/dictamenes/${d.id}`);
-          const dictamen = await res.json();
-          chatContainer.innerHTML = `<div class="flex items-start mt-4"><div class="flex rounded-b-xl rounded-tr-xl bg-slate-50 p-4 dark:bg-slate-800 sm:max-w-md md:max-w-2xl whitespace-pre-wrap"><strong>Dictamen ${d.id}:</strong><br>${dictamen.texto.replace(/\n/g,'<br>')}</div></div>`;
+          try {
+            const res = await fetch(`http://localhost:4000/api/dictamenes/${d.id}`);
+            if (!res.ok) {
+              const msg = await res.text();
+              throw new Error(msg || 'Error al obtener dictamen');
+            }
+            const dictamen = await res.json();
+            chatContainer.innerHTML = `<div class="flex items-start mt-4"><div class="flex rounded-b-xl rounded-tr-xl bg-slate-50 p-4 dark:bg-slate-800 sm:max-w-md md:max-w-2xl whitespace-pre-wrap"><strong>Dictamen ${d.id}:</strong><br>${dictamen.texto.replace(/\n/g,'<br>')}</div></div>`;
+          } catch (err) {
+            alert(err.message);
+          }
         });
         dictamenesRecientesNav.appendChild(a);
       });
@@ -214,6 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
         tono:       modoAcademico ? 'academico' : 'litigio'
       })
     });
+    if (!resp.ok) {
+      const msg = await resp.text();
+      cargandoEl.classList.add('hidden');
+      alert(msg || 'Error al generar preguntas');
+      return;
+    }
     const { preguntas } = await resp.json();
     preguntasActuales    = preguntas;
 
@@ -242,6 +260,12 @@ document.addEventListener('DOMContentLoaded', () => {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ respuesta })
     });
+    if (!res.ok) {
+      const msg = await res.text();
+      cargandoEl.classList.add('hidden');
+      alert(msg || 'Error al evaluar respuesta');
+      return;
+    }
     const { resultado } = await res.json();
 
     cargandoEl.classList.add('hidden');
