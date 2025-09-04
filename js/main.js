@@ -68,13 +68,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnPreguntas         = document.getElementById('exportarPreguntasBtn');
   const dictamenesRecientesNav = document.getElementById('dictamenesRecientes');
 
-  dictamenInput.addEventListener('change', () => {
-    const indicador = document.getElementById('dictamenCargado');
-    indicador.textContent = '';
-    if (dictamenInput.files[0]) {
-      indicador.textContent = `Dictamen cargado: ${dictamenInput.files[0].name}`;
-    }
-  });
+    dictamenInput.addEventListener('change', async () => {
+      const indicador = document.getElementById('dictamenIcon');
+      const file = dictamenInput.files[0];
+      if (file) {
+        try {
+          await obtenerTextoArchivo(file);
+          indicador.innerHTML = '<span class="text-green-500">✔️</span>';
+        } catch (err) {
+          indicador.innerHTML = '<span class="text-red-500">✖️</span>';
+        }
+      } else {
+        indicador.innerHTML = '<span class="text-red-500">✖️</span>';
+      }
+    });
 
   // — Estado interno —
   let estructuraDictamen = null;
@@ -190,7 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // — Iniciar simulación —
   iniciarBtn.addEventListener('click', async () => {
-    document.getElementById('dictamenCargado').textContent = '';
+    const indicador = document.getElementById('dictamenIcon');
+    indicador.innerHTML = '';
     chatContainer.innerHTML      = '';
     preguntasActuales            = [];
     preguntaIndex                = 0;
