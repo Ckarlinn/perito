@@ -1,5 +1,6 @@
+import { API_BASE_URL } from './config.js';
 export async function analizarDictamen(texto) {
-  const res = await fetch('http://localhost:4000/api/analizar', {
+  const res = await fetch(`${API_BASE_URL}/api/analizar`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ texto })
