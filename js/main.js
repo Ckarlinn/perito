@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const evaluarBtn           = document.getElementById('evaluarBtn');
   const btnHistorial         = document.getElementById('exportarPdfBtn');
   const btnPreguntas         = document.getElementById('exportarPreguntasBtn');
+  const dictamenesRecientesNav = document.getElementById('dictamenesRecientes');
 
   // — Estado interno —
   let estructuraDictamen = null;
@@ -72,6 +73,30 @@ document.addEventListener('DOMContentLoaded', () => {
   let preguntaIndex      = 0;
   let modoAcademico      = true;
   const historial        = [];
+
+  async function cargarDictamenesRecientes() {
+    if (!dictamenesRecientesNav) return;
+    try {
+      const resp = await fetch('http://localhost:4000/api/dictamenes');
+      const dictamenes = await resp.json();
+      dictamenesRecientesNav.innerHTML = '';
+      dictamenes.slice().reverse().forEach(d => {
+        const a = document.createElement('a');
+        a.href = '#';
+        a.textContent = `Dictamen ${d.id}`;
+        a.className = 'px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-white/5 transition-colors duration-200 truncate';
+        a.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const res = await fetch(`http://localhost:4000/api/dictamenes/${d.id}`);
+          const dictamen = await res.json();
+          chatContainer.innerHTML = `<div class="flex items-start mt-4"><div class="flex rounded-b-xl rounded-tr-xl bg-slate-50 p-4 dark:bg-slate-800 sm:max-w-md md:max-w-2xl whitespace-pre-wrap"><strong>Dictamen ${d.id}:</strong><br>${dictamen.texto.replace(/\n/g,'<br>')}</div></div>`;
+        });
+        dictamenesRecientesNav.appendChild(a);
+      });
+    } catch (err) {
+      console.error('Error cargando dictamenes', err);
+    }
+  }
 
   // Ocultar botones de exportación al inicio
   btnHistorial.classList.add('hidden');
@@ -168,6 +193,17 @@ document.addEventListener('DOMContentLoaded', () => {
       alert(err.message || 'Error al analizar dictamen');
       return;
     }
+
+    await fetch('http://localhost:4000/api/dictamenes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        texto,
+        estructura: estructuraDictamen,
+        fecha: new Date().toISOString()
+      })
+    });
+    cargarDictamenesRecientes();
 
     const resp = await fetch('http://localhost:4000/api/preguntas', {
       method:  'POST',
@@ -288,4 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     pdf.save(`preguntas_generadas_${fecha.split(',')[0].replace(/\//g,'-')}.pdf`);
   });
+
+  cargarDictamenesRecientes();
 });
