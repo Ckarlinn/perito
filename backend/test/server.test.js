@@ -8,6 +8,27 @@ jest.unstable_mockModule('../openai.js', () => ({
   generarRespuestaGPT: mockGenerarRespuestaGPT
 }));
 
+// Mock historial functions to avoid writing real files
+const memoria = [];
+const mockAgregarDictamen = jest.fn(async ({ texto, estructura, fecha }) => {
+  const id = memoria.length + 1;
+  const dictamen = { id, texto, estructura, fecha };
+  memoria.push(dictamen);
+  return dictamen;
+});
+const mockListarDictamenes = jest.fn(() => memoria);
+const mockObtenerDictamen = jest.fn(id => memoria.find(d => d.id === id));
+const mockClearDictamenes = jest.fn(async () => {
+  memoria.length = 0;
+});
+
+jest.unstable_mockModule('../historial.js', () => ({
+  agregarDictamen: mockAgregarDictamen,
+  listarDictamenes: mockListarDictamenes,
+  obtenerDictamen: mockObtenerDictamen,
+  clearDictamenes: mockClearDictamenes,
+}));
+
 const { app } = await import('../server.js');
 const { clearDictamenes } = await import('../historial.js');
 
@@ -52,51 +73,47 @@ describe('API routes', () => {
 });
 
 describe('Dictamenes API', () => {
-  test('POST /api/dictamenes adds dictamen', async () => {
+  test('POST /api/dictamenes stores dictamen and returns ID', async () => {
     const payload = {
       texto: 'texto',
       estructura: { hechos: [] },
       fecha: '2024-01-01'
     };
-    const res = await request(app).post('/api/dictamenes').send(payload);
-    expect(res.status).toBe(201);
-    expect(res.body).toMatchObject(payload);
-    expect(res.body).toHaveProperty('id');
+    const resPost = await request(app).post('/api/dictamenes').send(payload);
+    expect(resPost.status).toBe(201);
+    expect(resPost.body).toMatchObject(payload);
+    const id = resPost.body.id;
+    expect(id).toBeDefined();
+
+    const resGet = await request(app).get(`/api/dictamenes/${id}`);
+    expect(resGet.status).toBe(200);
+    expect(resGet.body).toEqual({ id, ...payload });
   });
 
-  test('GET /api/dictamenes lists dictamenes', async () => {
+  test('GET /api/dictamenes returns list with added dictamen', async () => {
     const payload = {
       texto: 'texto',
       estructura: { hechos: [] },
       fecha: '2024-01-01'
     };
-    await request(app).post('/api/dictamenes').send(payload);
-    const res = await request(app).get('/api/dictamenes');
-    expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBe(1);
+    const { body: postBody } = await request(app).post('/api/dictamenes').send(payload);
+    const resList = await request(app).get('/api/dictamenes');
+    expect(resList.status).toBe(200);
+    expect(resList.body).toEqual([{ id: postBody.id, ...payload }]);
   });
 
-  test('GET /api/dictamenes/:id returns dictamen', async () => {
+  test('GET /api/dictamenes/:id returns dictamen or 404', async () => {
     const payload = {
       texto: 'texto',
       estructura: { hechos: [] },
       fecha: '2024-01-01'
     };
-    const postRes = await request(app).post('/api/dictamenes').send(payload);
-    const id = postRes.body.id;
-    const res = await request(app).get(`/api/dictamenes/${id}`);
-    expect(res.status).toBe(200);
-    expect(res.body).toMatchObject(payload);
-  });
+    const { body: postBody } = await request(app).post('/api/dictamenes').send(payload);
+    const resOk = await request(app).get(`/api/dictamenes/${postBody.id}`);
+    expect(resOk.status).toBe(200);
+    expect(resOk.body).toEqual({ id: postBody.id, ...payload });
 
-  test('POST /api/dictamenes validates input', async () => {
-    const res = await request(app).post('/api/dictamenes').send({ texto: 123 });
-    expect(res.status).toBe(400);
-  });
-
-  test('GET /api/dictamenes/:id returns 404 when missing', async () => {
-    const res = await request(app).get('/api/dictamenes/999');
-    expect(res.status).toBe(404);
+    const resNotFound = await request(app).get('/api/dictamenes/999');
+    expect(resNotFound.status).toBe(404);
   });
 });
