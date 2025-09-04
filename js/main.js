@@ -1,3 +1,4 @@
+import { API_BASE_URL } from './config.js';
 import { analizarDictamen } from './parser.js';
 import * as pdfjsLib from '../assets/js/pdf.min.js';
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../assets/js/pdf.worker.min.js';
@@ -77,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function cargarDictamenesRecientes() {
     if (!dictamenesRecientesNav) return;
     try {
-      const resp = await fetch('http://localhost:4000/api/dictamenes');
+      const resp = await fetch(`${API_BASE_URL}/api/dictamenes`);
       if (!resp.ok) {
         const msg = await resp.text();
         throw new Error(msg || 'Error al cargar dictámenes');
@@ -92,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         a.addEventListener('click', async (e) => {
           e.preventDefault();
           try {
-            const res = await fetch(`http://localhost:4000/api/dictamenes/${d.id}`);
+            const res = await fetch(`${API_BASE_URL}/api/dictamenes/${d.id}`);
             if (!res.ok) {
               const msg = await res.text();
               throw new Error(msg || 'Error al obtener dictamen');
@@ -206,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    await fetch('http://localhost:4000/api/dictamenes', {
+    await fetch(`${API_BASE_URL}/api/dictamenes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -217,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     cargarDictamenesRecientes();
 
-    const resp = await fetch('http://localhost:4000/api/preguntas', {
+    const resp = await fetch(`${API_BASE_URL}/api/preguntas`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -255,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <p>🧠 Evaluando respuesta...</p>`;
 
     const preguntaActual = preguntasActuales[preguntaIndex];
-    const res = await fetch('http://localhost:4000/api/evaluar', {
+    const res = await fetch(`${API_BASE_URL}/api/evaluar`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ respuesta })
