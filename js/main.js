@@ -244,6 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
           tono:       modoAcademico ? 'academico' : 'litigio'
         })
       });
+      if (resp.status === 503) {
+        cargandoEl.classList.add('hidden');
+        alert('Configura la variable OPENAI_API_KEY en el servidor.');
+        return;
+      }
       if (!resp.ok) {
         throw new Error(await resp.text());
       }
