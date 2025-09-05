@@ -108,17 +108,64 @@ document.addEventListener('DOMContentLoaded', () => {
         a.className = 'px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-white/5 transition-colors duration-200 truncate';
         a.addEventListener('click', async (e) => {
           e.preventDefault();
+
+          // Reinicia estado para nueva simulación
+          chatContainer.innerHTML      = '';
+          preguntasActuales            = [];
+          preguntaIndex                = 0;
+          historial.length             = 0;
+          btnHistorial.classList.add('hidden');
+          btnPreguntas.classList.add('hidden');
+
           const detalleUrl = `${API_BASE_URL}/api/dictamenes/${d.id}`;
+          cargandoEl.classList.remove('hidden');
+          cargandoEl.innerHTML = `
+            <div class="spinner mx-auto mb-2"></div>
+            <p>Cargando dictamen...</p>`;
+
+          let dictamen;
           try {
             const res = await fetch(detalleUrl);
             if (!res.ok) {
               const msg = await res.text();
               throw new Error(msg || 'Error al obtener dictamen');
             }
-            const dictamen = await res.json();
-            chatContainer.innerHTML = `<div class="flex items-start mt-4"><div class="flex rounded-b-xl rounded-tr-xl bg-slate-50 p-4 dark:bg-slate-800 sm:max-w-md md:max-w-2xl whitespace-pre-wrap"><strong>Dictamen ${d.id}:</strong><br>${dictamen.texto.replace(/\n/g,'<br>')}</div></div>`;
+            dictamen = await res.json();
           } catch (err) {
+            cargandoEl.classList.add('hidden');
             alert(`No se pudo conectar con ${detalleUrl}: ${err.message}`);
+            return;
+          }
+
+          estructuraDictamen = dictamen.estructura;
+          chatContainer.innerHTML = `<div class="flex items-start mt-4"><div class="flex rounded-b-xl rounded-tr-xl bg-slate-50 p-4 dark:bg-slate-800 sm:max-w-md md:max-w-2xl whitespace-pre-wrap"><strong>Dictamen ${d.id}:</strong><br>${dictamen.texto.replace(/\n/g,'<br>')}</div></div>`;
+
+          const preguntasUrl = `${API_BASE_URL}/api/preguntas`;
+          cargandoEl.innerHTML = `
+            <div class="spinner mx-auto mb-2"></div>
+            <p>Generando preguntas...</p>`;
+
+          try {
+            const respPreg = await fetch(preguntasUrl, {
+              method:  'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body:    JSON.stringify({
+                modo:       modoSimulacionSelect.value,
+                estructura: estructuraDictamen,
+                tono:       modoAcademico ? 'academico' : 'litigio'
+              })
+            });
+            if (!respPreg.ok) {
+              const msg = await respPreg.text();
+              throw new Error(msg || 'Error al generar preguntas');
+            }
+            const { preguntas } = await respPreg.json();
+            preguntasActuales = preguntas;
+            cargandoEl.classList.add('hidden');
+            mostrarPregunta();
+          } catch (err) {
+            cargandoEl.classList.add('hidden');
+            alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
           }
         });
         dictamenesRecientesNav.appendChild(a);
