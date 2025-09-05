@@ -122,6 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
         dictamenesRecientesNav.appendChild(a);
       });
     } catch (err) {
+      cargandoEl.classList.add('hidden');
+      alert('No se puede conectar con el servidor backend.');
       console.error('Error cargando dictamenes', err);
     }
   }
@@ -224,15 +226,21 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    await fetch(`${API_BASE_URL}/api/dictamenes`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        texto,
-        estructura: estructuraDictamen,
-        fecha: new Date().toISOString()
-      })
-    });
+    try {
+      await fetch(`${API_BASE_URL}/api/dictamenes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          texto,
+          estructura: estructuraDictamen,
+          fecha: new Date().toISOString()
+        })
+      });
+    } catch (err) {
+      cargandoEl.classList.add('hidden');
+      alert('No se puede conectar con el servidor backend.');
+      return;
+    }
     cargarDictamenesRecientes();
     try {
       const resp = await fetch(`${API_BASE_URL}/api/preguntas`, {
