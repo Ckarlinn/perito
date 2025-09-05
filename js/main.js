@@ -92,8 +92,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function cargarDictamenesRecientes() {
     if (!dictamenesRecientesNav) return;
+    const url = `${API_BASE_URL}/api/dictamenes`;
     try {
-      const resp = await fetch(`${API_BASE_URL}/api/dictamenes`);
+      const resp = await fetch(url);
       if (!resp.ok) {
         const msg = await resp.text();
         throw new Error(msg || 'Error al cargar dictámenes');
@@ -107,8 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
         a.className = 'px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-white/5 transition-colors duration-200 truncate';
         a.addEventListener('click', async (e) => {
           e.preventDefault();
+          const detalleUrl = `${API_BASE_URL}/api/dictamenes/${d.id}`;
           try {
-            const res = await fetch(`${API_BASE_URL}/api/dictamenes/${d.id}`);
+            const res = await fetch(detalleUrl);
             if (!res.ok) {
               const msg = await res.text();
               throw new Error(msg || 'Error al obtener dictamen');
@@ -116,14 +118,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const dictamen = await res.json();
             chatContainer.innerHTML = `<div class="flex items-start mt-4"><div class="flex rounded-b-xl rounded-tr-xl bg-slate-50 p-4 dark:bg-slate-800 sm:max-w-md md:max-w-2xl whitespace-pre-wrap"><strong>Dictamen ${d.id}:</strong><br>${dictamen.texto.replace(/\n/g,'<br>')}</div></div>`;
           } catch (err) {
-            alert(err.message);
+            alert(`No se pudo conectar con ${detalleUrl}: ${err.message}`);
           }
         });
         dictamenesRecientesNav.appendChild(a);
       });
     } catch (err) {
       cargandoEl.classList.add('hidden');
-      alert('No se puede conectar con el servidor backend.');
+      alert(`No se pudo conectar con ${url}: ${err.message}`);
       console.error('Error cargando dictamenes', err);
     }
   }
@@ -226,8 +228,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const dictamenUrl = `${API_BASE_URL}/api/dictamenes`;
     try {
-      await fetch(`${API_BASE_URL}/api/dictamenes`, {
+      await fetch(dictamenUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -238,12 +241,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     } catch (err) {
       cargandoEl.classList.add('hidden');
-      alert('No se puede conectar con el servidor backend.');
+      alert(`No se pudo conectar con ${dictamenUrl}: ${err.message}`);
       return;
     }
     cargarDictamenesRecientes();
+    const preguntasUrl = `${API_BASE_URL}/api/preguntas`;
     try {
-      const resp = await fetch(`${API_BASE_URL}/api/preguntas`, {
+      const resp = await fetch(preguntasUrl, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -267,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
       preguntasActuales = preguntas;
     } catch (err) {
       cargandoEl.classList.add('hidden');
-      alert(err.message || 'No se pudieron generar preguntas');
+      alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
       return;
     }
 
