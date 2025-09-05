@@ -249,14 +249,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const { preguntas } = await resp.json();
       if (!preguntas.length) {
-        cargandoEl.classList.add('hidden');
-        alert('No se pudieron generar preguntas');
-        return;
+        throw new Error('No se pudieron generar preguntas');
       }
       preguntasActuales = preguntas;
     } catch (err) {
       cargandoEl.classList.add('hidden');
-      alert('No se pudieron generar preguntas');
+      alert(err.message || 'No se pudieron generar preguntas');
       return;
     }
 
