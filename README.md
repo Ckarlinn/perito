@@ -46,6 +46,22 @@ It responds with:
 { "status": "ok" }
 ```
 
+## Ejecutar backend y frontend por separado
+
+Si prefieres iniciar cada parte manualmente, utiliza dos terminales diferentes:
+
+```bash
+# Terminal 1: iniciar el servidor
+cd backend && npm start
+```
+
+```bash
+# Terminal 2: servir el frontend
+npx live-server
+```
+
+> **Advertencia:** el backend lee `OPENAI_API_KEY` desde `backend/.env`. Si cambias este valor, reinicia el servidor para aplicar la configuración.
+
 ## Frontend
 
 Open `index.html` in your browser. The page will communicate with the backend server to analyze text and generate questions.
