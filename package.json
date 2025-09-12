@@ -7,7 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "frontend": "cross-env VITE_API_BASE_URL=http://localhost:4000 live-server"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +18,8 @@
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.4"
+  },
+  "devDependencies": {
+    "cross-env": "^10.0.0"
   }
 }

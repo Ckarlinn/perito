@@ -46,7 +46,7 @@ puede configurarse de dos formas:
    npm start
 
    # Abrir el frontend con Live Server apuntando al backend local
-   VITE_API_BASE_URL="http://localhost:4000" npx live-server
+   npm run frontend
    ```
 
 2. **Inyección en `window.API_BASE_URL`**. Para servir archivos estáticos, basta
@@ -66,6 +66,13 @@ Ajusta estos valores si el backend corre en otra máquina o si se accede por
 Cuando se sirve el frontend con herramientas como `live-server`, la URL del
 backend puede definirse mediante la variable de entorno `VITE_API_BASE_URL`
 (o `API_BASE_URL` en producción). Los comandos varían según la plataforma:
+
+### Comando unificado
+
+```bash
+npm run frontend
+```
+
 
 ### Linux/macOS (Bash)
 
