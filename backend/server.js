@@ -30,7 +30,8 @@ app.post('/api/dictamenes', async (req, res) => {
     res.status(201).json(dictamen);
   } catch (err) {
     console.error(err.stack);
-    res.status(500).json({ error: err.message });
+    console.info('Sugerencia: verifica el archivo .env y reinicia el backend');
+    res.status(500).json({ error: err.message, code: err.code });
   }
 });
 
@@ -40,7 +41,8 @@ app.get('/api/dictamenes', (req, res) => {
     res.json(dictamenes);
   } catch (err) {
     console.error(err.stack);
-    res.status(500).json({ error: err.message });
+    console.info('Sugerencia: verifica el archivo .env y reinicia el backend');
+    res.status(500).json({ error: err.message, code: err.code });
   }
 });
 
@@ -57,7 +59,8 @@ app.get('/api/dictamenes/:id', (req, res) => {
     res.json(dictamen);
   } catch (err) {
     console.error(err.stack);
-    res.status(500).json({ error: err.message });
+    console.info('Sugerencia: verifica el archivo .env y reinicia el backend');
+    res.status(500).json({ error: err.message, code: err.code });
   }
 });
 
@@ -83,6 +86,7 @@ Texto del dictamen:
     res.json({ estructura: respuesta });
   } catch (err) {
     console.error(err.stack);
+    console.info('Sugerencia: verifica el archivo .env y reinicia el backend');
     const errorPayload = {
       error: err.message,
       code: err.code,
@@ -115,6 +119,7 @@ app.post('/api/preguntas', async (req, res) => {
     res.json({ preguntas });
   } catch (err) {
     console.error(err.stack);
+    console.info('Sugerencia: verifica el archivo .env y reinicia el backend');
     const errorPayload = {
       error: err.message,
       code: err.code,
@@ -156,10 +161,18 @@ Devuelve una tabla y una recomendación final.
     res.json({ resultado });
   } catch (err) {
     console.error(err.stack);
+    console.info('Sugerencia: verifica el archivo .env y reinicia el backend');
+    const errorPayload = {
+      error: err.message,
+      code: err.code,
+      stack: err.stack,
+      url: req.originalUrl,
+      suggestion: 'Verify that OPENAI_API_KEY exists'
+    };
     if (err.message.includes('OpenAI client not initialized')) {
-      return res.status(503).json({ error: 'Servicio no disponible' });
+      return res.status(503).json(errorPayload);
     }
-    res.status(500).json({ error: err.message });
+    res.status(500).json(errorPayload);
   }
 });
 
