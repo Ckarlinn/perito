@@ -70,16 +70,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function checkApi() {
     try {
-      const resp = await fetch(`${API_BASE_URL}/api/dictamenes`, { method: 'HEAD' });
-      if (!resp.ok) throw new Error('API no disponible');
+      const resp = await fetch(`${API_BASE_URL}/api/health`);
+      if (!resp.ok) throw new Error('Servidor no disponible');
       return true;
     } catch (err) {
-      const { status, statusText } = err.response || {};
-      if (status) {
-        alert(`Error ${status}: ${statusText}`);
-      } else {
-        alert(err.message || 'El servidor no está disponible');
-      }
+      alert('El servidor no está disponible');
       console.error(err);
       [iniciarBtn, evaluarBtn, btnHistorial, btnPreguntas].forEach(btn => btn && (btn.disabled = true));
       return false;
