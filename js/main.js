@@ -157,9 +157,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (status) {
               alert(`Error ${status}: ${statusText}`);
             } else {
-              alert(`No se pudo conectar con ${detalleUrl}: ${err.message}`);
+              alert(`No se pudo conectar con ${detalleUrl}: ${err.message}. ¿Está el backend corriendo? Ejecute \`npm start\` en la carpeta backend y verifique la variable OPENAI_API_KEY`);
             }
-            console.error(err);
+            console.error(`Error al conectar con ${detalleUrl}:`, err);
             return;
           }
 
@@ -194,9 +194,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (err.response) {
               alert(`Error ${err.response.status}: ${err.response.statusText}`);
             } else {
-              alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
+              alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}. ¿Está el backend corriendo? Ejecute \`npm start\` en la carpeta backend y verifique la variable OPENAI_API_KEY`);
             }
-            console.error(err);
+            console.error(`Error al conectar con ${preguntasUrl}:`, err);
           }
         });
         dictamenesRecientesNav.appendChild(a);
@@ -207,9 +207,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (status) {
         alert(`Error ${status}: ${statusText}`);
       } else {
-        alert(`No se pudo conectar con ${url}: ${err.message}`);
+        alert(`No se pudo conectar con ${url}: ${err.message}. ¿Está el backend corriendo? Ejecute \`npm start\` en la carpeta backend y verifique la variable OPENAI_API_KEY`);
       }
-      console.error(err);
+      console.error(`Error al conectar con ${url}:`, err);
     }
   }
 
@@ -328,9 +328,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (status) {
         alert(`Error ${status}: ${statusText}`);
       } else {
-        alert(`No se pudo conectar con ${dictamenUrl}: ${err.message}`);
+        alert(`No se pudo conectar con ${dictamenUrl}: ${err.message}. ¿Está el backend corriendo? Ejecute \`npm start\` en la carpeta backend y verifique la variable OPENAI_API_KEY`);
       }
-      console.error(err);
+      console.error(`Error al conectar con ${dictamenUrl}:`, err);
       return;
     }
     cargarDictamenesRecientes();
@@ -363,9 +363,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (err.response) {
         alert(`Error ${err.response.status}: ${err.response.statusText}`);
       } else {
-        alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
+        alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}. ¿Está el backend corriendo? Ejecute \`npm start\` en la carpeta backend y verifique la variable OPENAI_API_KEY`);
       }
-      console.error(err);
+      console.error(`Error al conectar con ${preguntasUrl}:`, err);
       return;
     }
 
