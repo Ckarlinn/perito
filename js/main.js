@@ -191,9 +191,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             mostrarPregunta();
           } catch (err) {
             cargandoEl.classList.add('hidden');
-            const { status, statusText } = err.response || {};
-            if (status) {
-              alert(`Error ${status}: ${statusText}`);
+            if (err.response) {
+              alert(`Error ${err.response.status}: ${err.response.statusText}`);
             } else {
               alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
             }
@@ -361,9 +360,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       preguntasActuales = preguntas;
     } catch (err) {
       cargandoEl.classList.add('hidden');
-      const { status, statusText } = err.response || {};
-      if (status) {
-        alert(`Error ${status}: ${statusText}`);
+      if (err.response) {
+        alert(`Error ${err.response.status}: ${err.response.statusText}`);
       } else {
         alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
       }
