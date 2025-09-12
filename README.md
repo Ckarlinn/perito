@@ -7,6 +7,7 @@ This project provides a small Node backend and a static HTML frontend used to pr
 1. Install Node dependencies:
 
 ```bash
+npm install
 cd backend
 npm install
 ```
@@ -19,10 +20,10 @@ cp backend/.env.example backend/.env
 # Optionally set PORT if you don't want the default 4000
 ```
 
-3. Start the API server:
+3. Start the backend and frontend together:
 
 ```bash
-npm start
+npm run dev
 ```
 
 The server listens on `http://127.0.0.1:4000` by default. On some Windows setups `localhost` may fail to resolve, so using the numeric IP avoids that problem. You can change the port by setting the `PORT` variable in the `.env` file.
@@ -55,12 +56,8 @@ puede configurarse de dos formas:
    ejecución local:
 
    ```bash
-   # Iniciar el backend
-   cd backend
-   npm start
-
-   # Abrir el frontend con Live Server apuntando al backend local
-   npm run frontend
+   # Iniciar el backend y el frontend
+   npm run dev
    ```
 
 2. **Inyección en `window.API_BASE_URL`**. Para servir archivos estáticos, basta
@@ -86,7 +83,7 @@ En Windows, algunos entornos no resuelven `localhost` correctamente; en esos cas
 ### Comando unificado
 
 ```bash
-npm run frontend
+npm run dev
 ```
 
 
