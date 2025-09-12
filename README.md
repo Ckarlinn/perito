@@ -27,6 +27,20 @@ npm start
 
 The server listens on `http://localhost:4000` by default. You can change the port by setting the `PORT` variable in the `.env` file.
 
+### Health check
+
+The backend exposes a simple endpoint to verify that it is running:
+
+```
+GET /api/health
+```
+
+It responds with:
+
+```json
+{ "status": "ok" }
+```
+
 ## Frontend
 
 Open `index.html` in your browser. The page will communicate with the backend server to analyze text and generate questions.

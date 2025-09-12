@@ -40,6 +40,12 @@ beforeEach(async () => {
 });
 
 describe('API routes', () => {
+  test('GET /api/health returns status ok', async () => {
+    const res = await request(app).get('/api/health');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ status: 'ok' });
+  });
+
   test('/api/analizar returns estructura', async () => {
     mockGenerarRespuestaGPT.mockResolvedValue('estructura de prueba');
     const res = await request(app)
