@@ -53,7 +53,7 @@ async function obtenerTextoArchivo(file) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // — Elementos del DOM —
   const dictamenInput        = document.getElementById('dictamenInput');
   const modoToggle           = document.getElementById('modoToggle');
@@ -67,6 +67,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnHistorial         = document.getElementById('exportarPdfBtn');
   const btnPreguntas         = document.getElementById('exportarPreguntasBtn');
   const dictamenesRecientesNav = document.getElementById('dictamenesRecientes');
+
+  async function checkApi() {
+    try {
+      const resp = await fetch(`${API_BASE_URL}/api/dictamenes`, { method: 'HEAD' });
+      if (!resp.ok) throw new Error('API no disponible');
+      return true;
+    } catch (err) {
+      alert('El servidor no está disponible');
+      [iniciarBtn, evaluarBtn, btnHistorial, btnPreguntas].forEach(btn => btn && (btn.disabled = true));
+      return false;
+    }
+  }
+
+  const apiDisponible = await checkApi();
 
     dictamenInput.addEventListener('change', async () => {
       const indicador = document.getElementById('dictamenIcon');
@@ -465,5 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pdf.save(`preguntas_generadas_${fecha.split(',')[0].replace(/\//g,'-')}.pdf`);
   });
 
-  cargarDictamenesRecientes();
+  if (apiDisponible) {
+    cargarDictamenesRecientes();
+  }
 });
