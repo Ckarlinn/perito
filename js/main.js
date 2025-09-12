@@ -68,14 +68,37 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnPreguntas         = document.getElementById('exportarPreguntasBtn');
   const dictamenesRecientesNav = document.getElementById('dictamenesRecientes');
 
+  async function mostrarErrorFetch(err, url) {
+    console.error(err);
+    if (err.response) {
+      const { status, statusText } = err.response;
+      let serverMessage = '';
+      try {
+        const data = await err.response.json();
+        serverMessage = data?.message || data?.error || JSON.stringify(data);
+      } catch {
+        try {
+          serverMessage = await err.response.text();
+        } catch {}
+      }
+      alert(serverMessage ? `Error ${status}: ${statusText} - ${serverMessage}` : `Error ${status}: ${statusText}`);
+    } else {
+      alert(`Failed to fetch${url ? ` ${url}` : ''}: ${err.message}`);
+    }
+  }
+
   async function checkApi() {
+    const url = `${API_BASE_URL}/api/health`;
     try {
-      const resp = await fetch(`${API_BASE_URL}/api/health`);
-      if (!resp.ok) throw new Error('Servidor no disponible');
+      const resp = await fetch(url);
+      if (!resp.ok) {
+        const error = new Error('HTTP error');
+        error.response = resp;
+        throw error;
+      }
       return true;
     } catch (err) {
-      alert('El servidor no está disponible');
-      console.error(err);
+      await mostrarErrorFetch(err, url);
       [iniciarBtn, evaluarBtn, btnHistorial, btnPreguntas].forEach(btn => btn && (btn.disabled = true));
       return false;
     }
@@ -111,8 +134,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const resp = await fetch(url);
       if (!resp.ok) {
-        const msg = await resp.text();
-        throw new Error(msg || 'Error al cargar dictámenes');
+        const error = new Error('HTTP error');
+        error.response = resp;
+        throw error;
       }
       const dictamenes = await resp.json();
       dictamenesRecientesNav.innerHTML = '';
@@ -142,19 +166,14 @@ document.addEventListener('DOMContentLoaded', async () => {
           try {
             const res = await fetch(detalleUrl);
             if (!res.ok) {
-              const msg = await res.text();
-              throw new Error(msg || 'Error al obtener dictamen');
+              const error = new Error('HTTP error');
+              error.response = res;
+              throw error;
             }
             dictamen = await res.json();
           } catch (err) {
             cargandoEl.classList.add('hidden');
-            const { status, statusText } = err.response || {};
-            if (status) {
-              alert(`Error ${status}: ${statusText}`);
-            } else {
-              alert(`No se pudo conectar con ${detalleUrl}: ${err.message}. ¿Está el backend corriendo? Ejecute \`npm start\` en la carpeta backend y verifique la variable OPENAI_API_KEY`);
-            }
-            console.error(`Error al conectar con ${detalleUrl}:`, err);
+            await mostrarErrorFetch(err, detalleUrl);
             return;
           }
 
@@ -177,8 +196,9 @@ document.addEventListener('DOMContentLoaded', async () => {
               })
             });
             if (!respPreg.ok) {
-              const msg = await respPreg.text();
-              throw new Error(msg || 'Error al generar preguntas');
+              const error = new Error('HTTP error');
+              error.response = respPreg;
+              throw error;
             }
             const { preguntas } = await respPreg.json();
             preguntasActuales = preguntas;
@@ -186,25 +206,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             mostrarPregunta();
           } catch (err) {
             cargandoEl.classList.add('hidden');
-            if (err.response) {
-              alert(`Error ${err.response.status}: ${err.response.statusText}`);
-            } else {
-              alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}. ¿Está el backend corriendo? Ejecute \`npm start\` en la carpeta backend y verifique la variable OPENAI_API_KEY`);
-            }
-            console.error(`Error al conectar con ${preguntasUrl}:`, err);
+            await mostrarErrorFetch(err, preguntasUrl);
           }
         });
         dictamenesRecientesNav.appendChild(a);
       });
     } catch (err) {
       cargandoEl.classList.add('hidden');
-      const { status, statusText } = err.response || {};
-      if (status) {
-        alert(`Error ${status}: ${statusText}`);
-      } else {
-        alert(`No se pudo conectar con ${url}: ${err.message}. ¿Está el backend corriendo? Ejecute \`npm start\` en la carpeta backend y verifique la variable OPENAI_API_KEY`);
-      }
-      console.error(`Error al conectar con ${url}:`, err);
+      await mostrarErrorFetch(err, url);
     }
   }
 
@@ -308,7 +317,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const dictamenUrl = `${API_BASE_URL}/api/dictamenes`;
     try {
-      await fetch(dictamenUrl, {
+      const resp = await fetch(dictamenUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -317,15 +326,14 @@ document.addEventListener('DOMContentLoaded', async () => {
           fecha: new Date().toISOString()
         })
       });
+      if (!resp.ok) {
+        const error = new Error('HTTP error');
+        error.response = resp;
+        throw error;
+      }
     } catch (err) {
       cargandoEl.classList.add('hidden');
-      const { status, statusText } = err.response || {};
-      if (status) {
-        alert(`Error ${status}: ${statusText}`);
-      } else {
-        alert(`No se pudo conectar con ${dictamenUrl}: ${err.message}. ¿Está el backend corriendo? Ejecute \`npm start\` en la carpeta backend y verifique la variable OPENAI_API_KEY`);
-      }
-      console.error(`Error al conectar con ${dictamenUrl}:`, err);
+      await mostrarErrorFetch(err, dictamenUrl);
       return;
     }
     cargarDictamenesRecientes();
@@ -346,7 +354,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
       if (!resp.ok) {
-        throw new Error(await resp.text());
+        const error = new Error('HTTP error');
+        error.response = resp;
+        throw error;
       }
       const { preguntas } = await resp.json();
       if (!preguntas.length) {
@@ -355,12 +365,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       preguntasActuales = preguntas;
     } catch (err) {
       cargandoEl.classList.add('hidden');
-      if (err.response) {
-        alert(`Error ${err.response.status}: ${err.response.statusText}`);
-      } else {
-        alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}. ¿Está el backend corriendo? Ejecute \`npm start\` en la carpeta backend y verifique la variable OPENAI_API_KEY`);
-      }
-      console.error(`Error al conectar con ${preguntasUrl}:`, err);
+      await mostrarErrorFetch(err, preguntasUrl);
       return;
     }
 
@@ -384,37 +389,43 @@ document.addEventListener('DOMContentLoaded', async () => {
       <p>🧠 Evaluando respuesta...</p>`;
 
     const preguntaActual = preguntasActuales[preguntaIndex];
-    const res = await fetch(`${API_BASE_URL}/api/evaluar`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ respuesta })
-    });
-    if (!res.ok) {
-      const msg = await res.text();
+    const evaluarUrl = `${API_BASE_URL}/api/evaluar`;
+    try {
+      const res = await fetch(evaluarUrl, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ respuesta })
+      });
+      if (!res.ok) {
+        const error = new Error('HTTP error');
+        error.response = res;
+        throw error;
+      }
+      const { resultado } = await res.json();
+
       cargandoEl.classList.add('hidden');
-      alert(msg || 'Error al evaluar respuesta');
+      const evalHTML = renderEvaluation(resultado);
+      chatContainer.innerHTML += `
+        <div class="flex items-start mt-4">
+          <div class="flex rounded-b-xl rounded-tr-xl bg-slate-50 p-4 dark:bg-slate-800 sm:max-w-md md:max-w-2xl">
+            <strong>Respuesta:</strong><br>${respuesta}
+          </div>
+        </div>
+        <div class="flex items-start mt-4">
+          <div class="flex rounded-b-xl rounded-tr-xl bg-slate-50 p-4 dark:bg-slate-800 flex-col sm:max-w-md md:max-w-2xl">
+            <strong>Evaluación:</strong><br>${evalHTML}
+          </div>
+        </div>`;
+
+      historial.push({ pregunta: preguntaActual, respuesta, evaluacion: resultado });
+      const wrapper = chatContainer.parentElement;
+      wrapper.scrollTop = wrapper.scrollHeight;
+      avanzarPregunta();
+    } catch (err) {
+      cargandoEl.classList.add('hidden');
+      await mostrarErrorFetch(err, evaluarUrl);
       return;
     }
-    const { resultado } = await res.json();
-
-    cargandoEl.classList.add('hidden');
-    const evalHTML = renderEvaluation(resultado);
-    chatContainer.innerHTML += `
-      <div class="flex items-start mt-4">
-        <div class="flex rounded-b-xl rounded-tr-xl bg-slate-50 p-4 dark:bg-slate-800 sm:max-w-md md:max-w-2xl">
-          <strong>Respuesta:</strong><br>${respuesta}
-        </div>
-      </div>
-      <div class="flex items-start mt-4">
-        <div class="flex rounded-b-xl rounded-tr-xl bg-slate-50 p-4 dark:bg-slate-800 flex-col sm:max-w-md md:max-w-2xl">
-          <strong>Evaluación:</strong><br>${evalHTML}
-        </div>
-      </div>`;
-
-    historial.push({ pregunta: preguntaActual, respuesta, evaluacion: resultado });
-    const wrapper = chatContainer.parentElement;
-    wrapper.scrollTop = wrapper.scrollHeight;
-    avanzarPregunta();
   });
 
   // — Exportar historial completo a PDF —
