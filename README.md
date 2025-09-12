@@ -33,17 +33,30 @@ Open `index.html` in your browser. The page will communicate with the backend se
 
 ## Configuración del backend
 
-El frontend obtiene la URL del servidor desde variables de entorno. Durante el
-desarrollo, Vite usa `VITE_API_BASE_URL` y en la versión compilada se emplea
-`API_BASE_URL`. Ajusta estos valores si el backend corre en otra máquina o si
-el acceso se realiza por **HTTPS**.
+El frontend necesita saber dónde está el backend. La URL base (`API_BASE_URL`)
+puede configurarse de dos formas:
 
-Ejemplos de uso:
+1. **Variable de entorno**. Durante el desarrollo con Vite se usa
+   `VITE_API_BASE_URL` y en la versión compilada `API_BASE_URL`.  Ejemplo de
+   ejecución local:
 
-```bash
-# Ejecutar el frontend en modo desarrollo apuntando a un backend remoto
-VITE_API_BASE_URL="http://192.168.1.10:4000" npm run dev
+   ```bash
+   # Iniciar el backend
+   cd backend
+   npm start
 
-# Compilar la aplicación especificando un backend con HTTPS
-API_BASE_URL="https://api.midominio.com" npm run build
-```
+   # Abrir el frontend con Live Server apuntando al backend local
+   VITE_API_BASE_URL="http://localhost:4000" npx live-server
+   ```
+
+2. **Inyección en `window.API_BASE_URL`**. Para servir archivos estáticos, basta
+   con definir la variable antes de cargar los scripts del frontend:
+
+   ```html
+   <script>
+     window.API_BASE_URL = "https://api.midominio.com";
+   </script>
+   ```
+
+Ajusta estos valores si el backend corre en otra máquina o si se accede por
+**HTTPS**.
