@@ -26,35 +26,7 @@ cp backend/.env.example backend/.env
 npm run dev
 ```
 
-### Running the project on different shells
-
-Before launching the app, install dependencies in both the project root and the
-`backend/` directory:
-
-```bash
-npm install
-cd backend && npm install && cd ..
-```
-
-Then set `VITE_API_BASE_URL` and start the servers using your shell of choice:
-
-#### Bash (Linux/macOS)
-
-```bash
-VITE_API_BASE_URL=http://127.0.0.1:4000 npm run dev
-```
-
-#### Windows CMD
-
-```cmd
-set VITE_API_BASE_URL=http://127.0.0.1:4000 && npm run dev
-```
-
-#### PowerShell
-
-```powershell
-$env:VITE_API_BASE_URL="http://127.0.0.1:4000"; npm run dev
-```
+This command uses `cross-env` to set `VITE_API_BASE_URL`, so it works the same on Windows, macOS, and Linux.
 
 The server listens on `http://127.0.0.1:4000` by default. On some Windows setups `localhost` may fail to resolve, so using the numeric IP avoids that problem. You can change the port by setting the `PORT` variable in the `.env` file.
 
@@ -106,31 +78,6 @@ Ajusta estos valores si el backend corre en otra máquina o si se accede por
 
 Cuando se sirve el frontend con herramientas como `live-server`, la URL del
 backend puede definirse mediante la variable de entorno `VITE_API_BASE_URL`
-(o `API_BASE_URL` en producción). Los comandos varían según la plataforma:
+(o `API_BASE_URL` en producción). Gracias al script `npm run dev`, este valor
+se establece automáticamente en cualquier sistema operativo.
 
-En Windows, algunos entornos no resuelven `localhost` correctamente; en esos casos usa `http://127.0.0.1:4000`.
-
-### Comando unificado
-
-```bash
-npm run dev
-```
-
-
-### Linux/macOS (Bash)
-
-```bash
-VITE_API_BASE_URL=http://localhost:4000 npx live-server
-```
-
-### Windows CMD
-
-```cmd
-set VITE_API_BASE_URL=http://127.0.0.1:4000 && npx live-server
-```
-
-### PowerShell
-
-```powershell
-$env:VITE_API_BASE_URL="http://127.0.0.1:4000"; npx live-server
-```
