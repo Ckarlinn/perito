@@ -79,6 +79,10 @@ Texto del dictamen:
   }
 });
 
+app.get('/api/preguntas', (_, res) =>
+  res.status(405).json({ error: 'Use POST en lugar de GET' })
+);
+
 app.post('/api/preguntas', async (req, res) => {
   try {
     const { modo, estructura, tono } = req.body;
