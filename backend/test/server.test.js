@@ -1,6 +1,8 @@
 import request from 'supertest';
 import { jest } from '@jest/globals';
 
+process.env.OPENAI_API_KEY = 'test-key';
+
 // Mock generarRespuestaGPT to avoid calling OpenAI
 const mockGenerarRespuestaGPT = jest.fn();
 
