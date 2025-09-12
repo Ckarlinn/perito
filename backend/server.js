@@ -85,6 +85,8 @@ Texto del dictamen:
     console.error(err.stack);
     const errorPayload = {
       error: err.message,
+      code: err.code,
+      stack: err.stack,
       url: req.originalUrl,
       suggestion: 'Verify that OPENAI_API_KEY exists'
     };
@@ -115,6 +117,8 @@ app.post('/api/preguntas', async (req, res) => {
     console.error(err.stack);
     const errorPayload = {
       error: err.message,
+      code: err.code,
+      stack: err.stack,
       url: req.originalUrl,
       suggestion: 'Verify that OPENAI_API_KEY exists'
     };
