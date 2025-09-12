@@ -61,6 +61,12 @@ describe('API routes', () => {
     expect(res.body).toEqual({ preguntas: ['pregunta1', 'pregunta2'] });
   });
 
+  test('GET /api/preguntas returns 405', async () => {
+    const res = await request(app).get('/api/preguntas');
+    expect(res.status).toBe(405);
+    expect(res.body).toEqual({ error: 'Use POST en lugar de GET' });
+  });
+
   test('/api/evaluar returns resultado', async () => {
     mockGenerarRespuestaGPT.mockResolvedValue('resultado de prueba');
     const res = await request(app)
