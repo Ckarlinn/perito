@@ -3,21 +3,22 @@ import { OpenAI } from 'openai';
 
 dotenv.config({ path: new URL('./.env', import.meta.url).pathname });
 
-let openai = null;
+let client = null;
 
-if (process.env.OPENAI_API_KEY) {
-  openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-  });
-} else if (process.env.NODE_ENV !== 'test') {
-  console.error('Error: OPENAI_API_KEY is not set in the environment.');
-  console.error('Please create a .env file with your API key.');
+export function getClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error(
+      'OpenAI client not initialized: missing OPENAI_API_KEY environment variable'
+    );
+  }
+  if (!client) {
+    client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return client;
 }
 
 export async function generarRespuestaGPT(prompt) {
-  if (!openai) {
-    throw new Error('OpenAI client not initialized. Set OPENAI_API_KEY.');
-  }
+  const openai = getClient();
   const timeoutMs = Number(process.env.OPENAI_TIMEOUT_MS) || 15000;
   const openaiPromise = openai.chat.completions.create({
     model: 'gpt-4o',
