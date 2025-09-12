@@ -26,6 +26,36 @@ cp backend/.env.example backend/.env
 npm run dev
 ```
 
+### Running the project on different shells
+
+Before launching the app, install dependencies in both the project root and the
+`backend/` directory:
+
+```bash
+npm install
+cd backend && npm install && cd ..
+```
+
+Then set `VITE_API_BASE_URL` and start the servers using your shell of choice:
+
+#### Bash (Linux/macOS)
+
+```bash
+VITE_API_BASE_URL=http://127.0.0.1:4000 npm run dev
+```
+
+#### Windows CMD
+
+```cmd
+set VITE_API_BASE_URL=http://127.0.0.1:4000 && npm run dev
+```
+
+#### PowerShell
+
+```powershell
+$env:VITE_API_BASE_URL="http://127.0.0.1:4000"; npm run dev
+```
+
 The server listens on `http://127.0.0.1:4000` by default. On some Windows setups `localhost` may fail to resolve, so using the numeric IP avoids that problem. You can change the port by setting the `PORT` variable in the `.env` file.
 
 ### Health check
