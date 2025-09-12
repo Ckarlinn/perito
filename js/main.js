@@ -81,9 +81,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           serverMessage = await err.response.text();
         } catch {}
       }
-      alert(serverMessage ? `Error ${status}: ${statusText} - ${serverMessage}` : `Error ${status}: ${statusText}`);
+      alert(serverMessage
+        ? `Error ${status} ${statusText} al solicitar ${url}: ${serverMessage}`
+        : `Error ${status} ${statusText} al solicitar ${url}`);
     } else {
-      alert(`Failed to fetch${url ? ` ${url}` : ''}: ${err.message}`);
+      alert(`Error al solicitar ${url}: ${err.message}. ¿Ejecutaste npm start en backend y definiste OPENAI_API_KEY?`);
     }
   }
 
