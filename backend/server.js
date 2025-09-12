@@ -6,6 +6,10 @@ import { generarPromptPreguntas } from './prompts.js';
 import { agregarDictamen, listarDictamenes, obtenerDictamen } from './historial.js';
 
 dotenv.config();
+if (!process.env.OPENAI_API_KEY) {
+  console.error('Falta la variable de entorno OPENAI_API_KEY');
+  process.exit(1);
+}
 console.log('OPENAI_API_KEY detected:', !!process.env.OPENAI_API_KEY);
 
 export const app = express();
