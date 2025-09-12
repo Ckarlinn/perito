@@ -25,7 +25,7 @@ cp backend/.env.example backend/.env
 npm start
 ```
 
-The server listens on `http://localhost:4000` by default. You can change the port by setting the `PORT` variable in the `.env` file.
+The server listens on `http://127.0.0.1:4000` by default. On some Windows setups `localhost` may fail to resolve, so using the numeric IP avoids that problem. You can change the port by setting the `PORT` variable in the `.env` file.
 
 ### Health check
 
@@ -81,6 +81,8 @@ Cuando se sirve el frontend con herramientas como `live-server`, la URL del
 backend puede definirse mediante la variable de entorno `VITE_API_BASE_URL`
 (o `API_BASE_URL` en producción). Los comandos varían según la plataforma:
 
+En Windows, algunos entornos no resuelven `localhost` correctamente; en esos casos usa `http://127.0.0.1:4000`.
+
 ### Comando unificado
 
 ```bash
@@ -97,11 +99,11 @@ VITE_API_BASE_URL=http://localhost:4000 npx live-server
 ### Windows CMD
 
 ```cmd
-set VITE_API_BASE_URL=http://localhost:4000 && npx live-server
+set VITE_API_BASE_URL=http://127.0.0.1:4000 && npx live-server
 ```
 
 ### PowerShell
 
 ```powershell
-$env:VITE_API_BASE_URL="http://localhost:4000"; npx live-server
+$env:VITE_API_BASE_URL="http://127.0.0.1:4000"; npx live-server
 ```
