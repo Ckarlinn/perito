@@ -28,6 +28,7 @@ app.post('/api/dictamenes', async (req, res) => {
     const dictamen = await agregarDictamen({ texto, estructura, fecha });
     res.status(201).json(dictamen);
   } catch (err) {
+    console.error(err.stack);
     res.status(500).json({ error: err.message });
   }
 });
@@ -37,6 +38,7 @@ app.get('/api/dictamenes', (req, res) => {
     const dictamenes = listarDictamenes();
     res.json(dictamenes);
   } catch (err) {
+    console.error(err.stack);
     res.status(500).json({ error: err.message });
   }
 });
@@ -53,13 +55,14 @@ app.get('/api/dictamenes/:id', (req, res) => {
     }
     res.json(dictamen);
   } catch (err) {
+    console.error(err.stack);
     res.status(500).json({ error: err.message });
   }
 });
 
 app.post('/api/analizar', async (req, res) => {
   try {
-    const { texto } = req.body;
+    const { texto, modo } = req.body;
     const prompt = `
 Eres un asistente forense legal experto. A partir del siguiente dictamen, extrae:
 
@@ -73,9 +76,12 @@ Texto del dictamen:
 """${texto}"""
 `;
 
+    console.log('Modo:', modo);
+    console.log('OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
     const respuesta = await generarRespuestaGPT(prompt);
     res.json({ estructura: respuesta });
   } catch (err) {
+    console.error(err.stack);
     if (err.message.includes('OpenAI client not initialized')) {
       return res.status(503).json({ error: 'Servicio no disponible' });
     }
@@ -93,11 +99,14 @@ app.post('/api/preguntas', async (req, res) => {
 
     const prompt = generarPromptPreguntas(modo, estructura, tono);
 
+    console.log('Modo:', modo);
+    console.log('OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
     const respuesta = await generarRespuestaGPT(prompt);
     const preguntas = respuesta.split('\n').filter(p => p.trim() !== '');
 
     res.json({ preguntas });
   } catch (err) {
+    console.error(err.stack);
     if (err.message.includes('OpenAI client not initialized')) {
       return res.status(503).json({ error: 'Servicio no disponible' });
     }
@@ -107,7 +116,7 @@ app.post('/api/preguntas', async (req, res) => {
 
 app.post('/api/evaluar', async (req, res) => {
   try {
-    const { respuesta } = req.body;
+    const { respuesta, modo } = req.body;
 
     const prompt = `
 Eres un evaluador legal experto. Califica esta respuesta dada por un perito en juicio:
@@ -126,9 +135,12 @@ Evalúa del 1 al 5 en cada uno de los siguientes criterios, y justifica:
 Devuelve una tabla y una recomendación final.
 `;
 
+    console.log('Modo:', modo);
+    console.log('OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
     const resultado = await generarRespuestaGPT(prompt);
     res.json({ resultado });
   } catch (err) {
+    console.error(err.stack);
     if (err.message.includes('OpenAI client not initialized')) {
       return res.status(503).json({ error: 'Servicio no disponible' });
     }
