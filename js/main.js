@@ -133,7 +133,13 @@ document.addEventListener('DOMContentLoaded', () => {
             dictamen = await res.json();
           } catch (err) {
             cargandoEl.classList.add('hidden');
-            alert(`No se pudo conectar con ${detalleUrl}: ${err.message}`);
+            const { status, statusText } = err.response || {};
+            if (status) {
+              alert(`Error ${status}: ${statusText}`);
+            } else {
+              alert(`No se pudo conectar con ${detalleUrl}: ${err.message}`);
+            }
+            console.error(err.stack || err);
             return;
           }
 
@@ -165,15 +171,26 @@ document.addEventListener('DOMContentLoaded', () => {
             mostrarPregunta();
           } catch (err) {
             cargandoEl.classList.add('hidden');
-            alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
+            const { status, statusText } = err.response || {};
+            if (status) {
+              alert(`Error ${status}: ${statusText}`);
+            } else {
+              alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
+            }
+            console.error(err.stack || err);
           }
         });
         dictamenesRecientesNav.appendChild(a);
       });
     } catch (err) {
       cargandoEl.classList.add('hidden');
-      alert(`No se pudo conectar con ${url}: ${err.message}`);
-      console.error('Error cargando dictamenes', err);
+      const { status, statusText } = err.response || {};
+      if (status) {
+        alert(`Error ${status}: ${statusText}`);
+      } else {
+        alert(`No se pudo conectar con ${url}: ${err.message}`);
+      }
+      console.error(err.stack || err);
     }
   }
 
@@ -288,7 +305,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     } catch (err) {
       cargandoEl.classList.add('hidden');
-      alert(`No se pudo conectar con ${dictamenUrl}: ${err.message}`);
+      const { status, statusText } = err.response || {};
+      if (status) {
+        alert(`Error ${status}: ${statusText}`);
+      } else {
+        alert(`No se pudo conectar con ${dictamenUrl}: ${err.message}`);
+      }
+      console.error(err.stack || err);
       return;
     }
     cargarDictamenesRecientes();
@@ -318,7 +341,13 @@ document.addEventListener('DOMContentLoaded', () => {
       preguntasActuales = preguntas;
     } catch (err) {
       cargandoEl.classList.add('hidden');
-      alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
+      const { status, statusText } = err.response || {};
+      if (status) {
+        alert(`Error ${status}: ${statusText}`);
+      } else {
+        alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
+      }
+      console.error(err.stack || err);
       return;
     }
 
