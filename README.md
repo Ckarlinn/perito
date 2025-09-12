@@ -20,6 +20,8 @@ cp backend/.env.example backend/.env
 # Optionally set PORT if you don't want the default 4000
 ```
 
+After modifying `backend/.env`, restart the backend so that the new settings take effect.
+
 3. Start the backend and frontend together:
 
 ```bash

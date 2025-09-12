@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { OpenAI } from 'openai';
 
-dotenv.config();
+dotenv.config({ path: new URL('./.env', import.meta.url).pathname });
 
 let openai = null;
 
