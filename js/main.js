@@ -74,7 +74,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!resp.ok) throw new Error('API no disponible');
       return true;
     } catch (err) {
-      alert('El servidor no está disponible');
+      const { status, statusText } = err.response || {};
+      if (status) {
+        alert(`Error ${status}: ${statusText}`);
+      } else {
+        alert(err.message || 'El servidor no está disponible');
+      }
+      console.error(err);
       [iniciarBtn, evaluarBtn, btnHistorial, btnPreguntas].forEach(btn => btn && (btn.disabled = true));
       return false;
     }
@@ -153,7 +159,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
               alert(`No se pudo conectar con ${detalleUrl}: ${err.message}`);
             }
-            console.error(err.stack || err);
+            console.error(err);
             return;
           }
 
@@ -191,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
               alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
             }
-            console.error(err.stack || err);
+            console.error(err);
           }
         });
         dictamenesRecientesNav.appendChild(a);
@@ -204,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         alert(`No se pudo conectar con ${url}: ${err.message}`);
       }
-      console.error(err.stack || err);
+      console.error(err);
     }
   }
 
@@ -325,7 +331,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         alert(`No se pudo conectar con ${dictamenUrl}: ${err.message}`);
       }
-      console.error(err.stack || err);
+      console.error(err);
       return;
     }
     cargarDictamenesRecientes();
@@ -361,7 +367,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         alert(`No se pudo conectar con ${preguntasUrl}: ${err.message}`);
       }
-      console.error(err.stack || err);
+      console.error(err);
       return;
     }
 
