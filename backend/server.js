@@ -6,6 +6,7 @@ import { generarPromptPreguntas } from './prompts.js';
 import { agregarDictamen, listarDictamenes, obtenerDictamen } from './historial.js';
 
 dotenv.config();
+console.log('OPENAI_API_KEY detected:', !!process.env.OPENAI_API_KEY);
 
 export const app = express();
 app.use(cors());
@@ -82,10 +83,15 @@ Texto del dictamen:
     res.json({ estructura: respuesta });
   } catch (err) {
     console.error(err.stack);
+    const errorPayload = {
+      error: err.message,
+      url: req.originalUrl,
+      suggestion: 'Verify that OPENAI_API_KEY exists'
+    };
     if (err.message.includes('OpenAI client not initialized')) {
-      return res.status(503).json({ error: 'Servicio no disponible' });
+      return res.status(503).json(errorPayload);
     }
-    res.status(500).json({ error: err.message });
+    res.status(500).json(errorPayload);
   }
 });
 
@@ -107,10 +113,15 @@ app.post('/api/preguntas', async (req, res) => {
     res.json({ preguntas });
   } catch (err) {
     console.error(err.stack);
+    const errorPayload = {
+      error: err.message,
+      url: req.originalUrl,
+      suggestion: 'Verify that OPENAI_API_KEY exists'
+    };
     if (err.message.includes('OpenAI client not initialized')) {
-      return res.status(503).json({ error: 'Servicio no disponible' });
+      return res.status(503).json(errorPayload);
     }
-    res.status(500).json({ error: err.message });
+    res.status(500).json(errorPayload);
   }
 });
 
