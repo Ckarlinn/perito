@@ -28,7 +28,7 @@ After modifying `backend/.env`, restart the backend so that the new settings tak
 npm run dev
 ```
 
-This command launches both the backend and a live server for the frontend using `concurrently`. `cross-env` sets `VITE_API_BASE_URL`, so it works the same on Windows, macOS, and Linux. If you prefer to run each part manually, you'll need two terminals (see the section below).
+This command launches both the backend (port 4000) and a live server for the frontend (port 8080) using `concurrently`. `cross-env` sets `VITE_API_BASE_URL`, so it works the same on Windows, macOS, and Linux. If you prefer to run each part manually, you'll need two terminals (see the section below).
 
 The server listens on `http://127.0.0.1:4000` by default. On some Windows setups `localhost` may fail to resolve, so using the numeric IP avoids that problem. You can change the port by setting the `PORT` variable in the `.env` file.
 
