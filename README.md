@@ -22,13 +22,13 @@ cp backend/.env.example backend/.env
 
 After modifying `backend/.env`, restart the backend so that the new settings take effect.
 
-3. Start the backend and frontend together:
+3. Start the backend and frontend:
 
 ```bash
-npm run dev
+npm start
 ```
 
-This command launches both the backend and a live server for the frontend using `concurrently`. `cross-env` sets `VITE_API_BASE_URL`, so it works the same on Windows, macOS, and Linux. If you prefer to run each part manually, you'll need two terminals (see the section below).
+This starts the Express backend, which also serves the static frontend files. Visit `http://localhost:4000` to use the app.
 
 The server listens on `http://127.0.0.1:4000` by default. On some Windows setups `localhost` may fail to resolve, so using the numeric IP avoids that problem. You can change the port by setting the `PORT` variable in the `.env` file.
 
@@ -46,21 +46,15 @@ It responds with:
 { "status": "ok" }
 ```
 
-## Ejecutar backend y frontend por separado
+## Ejecutar solo el backend
 
-Si prefieres iniciar cada parte manualmente, utiliza dos terminales diferentes:
+El frontend se sirve automáticamente, pero puedes iniciar el servidor desde la carpeta `backend` si lo prefieres:
 
 ```bash
-# Terminal 1: iniciar el servidor
 cd backend && npm start
 ```
 
-```bash
-# Terminal 2: servir el frontend
-npx live-server
-```
-
-> **Advertencia:** el backend lee `OPENAI_API_KEY` desde `backend/.env`. Si cambias este valor, reinicia el servidor para aplicar la configuración.
+Luego abre `http://localhost:4000` en tu navegador.
 
 ## Frontend
 
@@ -77,7 +71,7 @@ puede configurarse de dos formas:
 
    ```bash
    # Iniciar el backend y el frontend
-   npm run dev
+   npm start
    ```
 
 2. **Inyección en `window.API_BASE_URL`**. Para servir archivos estáticos, basta
@@ -96,6 +90,6 @@ Ajusta estos valores si el backend corre en otra máquina o si se accede por
 
 Cuando se sirve el frontend con herramientas como `live-server`, la URL del
 backend puede definirse mediante la variable de entorno `VITE_API_BASE_URL`
-(o `API_BASE_URL` en producción). Gracias al script `npm run dev`, este valor
+(o `API_BASE_URL` en producción). Gracias al script `npm start`, este valor
 se establece automáticamente en cualquier sistema operativo.
 

@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import { generarRespuestaGPT } from './openai.js';
 import { generarPromptPreguntas } from './prompts.js';
 import { agregarDictamen, listarDictamenes, obtenerDictamen } from './historial.js';
@@ -15,6 +16,7 @@ console.log('OPENAI_API_KEY detected:', !!process.env.OPENAI_API_KEY);
 export const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(new URL('../', import.meta.url).pathname));
 
 app.get('/api/health', (_, res) => {
   res.json({ status: 'ok' });
