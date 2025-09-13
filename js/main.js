@@ -69,7 +69,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const dictamenesRecientesNav = document.getElementById('dictamenesRecientes');
 
   async function mostrarErrorFetch(err, url) {
-    console.error(err);
+    const contexto = `Error al solicitar ${url} (API_BASE_URL: ${API_BASE_URL})`;
+    console.error(contexto, err);
     if (err.response) {
       const { status, statusText } = err.response;
       let serverMessage = '';
@@ -81,11 +82,14 @@ document.addEventListener('DOMContentLoaded', async () => {
           serverMessage = await err.response.text();
         } catch {}
       }
+      console.error('Detalles de la respuesta:', { status, statusText, serverMessage });
+      const diagnostico = `Verifica que el servidor esté en ejecución y que la variable OPENAI_API_KEY esté configurada.`;
       alert(serverMessage
-        ? `Error ${status} ${statusText} al solicitar ${url}: ${serverMessage}`
-        : `Error ${status} ${statusText} al solicitar ${url}`);
+        ? `${contexto}: ${status} ${statusText} - ${serverMessage}\n${diagnostico}`
+        : `${contexto}: ${status} ${statusText}\n${diagnostico}`);
     } else {
-      alert(`Error al solicitar ${url}: ${err.message}. ¿Ejecutaste npm start en backend y definiste OPENAI_API_KEY?`);
+      const diagnostico = `Verifica que el servidor esté en ejecución y que la variable OPENAI_API_KEY esté configurada.`;
+      alert(`${contexto}: ${err.message}\n${diagnostico}`);
     }
   }
 
